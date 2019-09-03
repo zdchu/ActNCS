@@ -59,7 +59,7 @@ def load_data_dec(DATASET, FEATURES, DATASEED=1234, TESTING=False, datasplit_dir
 
     if os.path.isfile(datasplit_path):
         print('Reading dataset splits from file...')
-        with open(datasplit_path) as f:
+        with open(datasplit_path, 'rb') as f:
             num_users, num_items, u_nodes, v_nodes, ratings, u_features, v_features, true_class = pkl.load(f)
 
         if VERBOSE:
