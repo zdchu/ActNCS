@@ -10,8 +10,8 @@
       <sourceFolder url="file://$MODULE_DIR$" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/crowdlayer" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/gcnetwork" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/gcnetwork/gcmc" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/crowdlayer/crowd_layer" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/gcnetwork/gcmc" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
