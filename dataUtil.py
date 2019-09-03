@@ -1,7 +1,7 @@
 '''
 data loading and preprocessing
 '''
-from gc_mc_master.gcmc.preprocessing import *
+from gcnetwork.gcmc.preprocessing import *
 import random
 
 '''
