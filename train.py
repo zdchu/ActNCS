@@ -13,7 +13,6 @@ import sys
 import json
 
 import dataUtil
-import model
 
 import matplotlib.cm as cm
 from matplotlib import pyplot as plt
@@ -34,7 +33,6 @@ from crowdlayer.conlleval import conlleval
 from crowdlayer.crowd_layer.crowd_layers import CrowdsClassification, MaskedMultiCrossEntropy
 from crowdlayer.crowd_layer.crowd_aggregators import CrowdsCategoricalAggregator
 
-from gcnetwork.gcmc.metrics import accuracy_res, accuracy_res_sensor
 from gcnetwork.gcmc.preprocessing import create_trainvaltest_split, \
     sparse_to_tuple, preprocess_user_item_features, globally_normalize_bipartite_adjacency, \
     load_data_monti, load_official_trainvaltest_split, normalize_features, load_data_sensor, load_data_crowd
