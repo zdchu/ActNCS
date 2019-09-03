@@ -3,6 +3,7 @@ data loading and preprocessing
 '''
 from gcnetwork.gcmc.preprocessing import *
 import random
+import IPython
 
 '''
 load data
@@ -147,6 +148,7 @@ def create_crowd_data(dataset, data_dir, seed=1234, verbose=True):
     u_nodes_ratings, u_dict, num_users = map_data(u_nodes_ratings)
     v_nodes_ratings, v_dict, num_items = map_data(v_nodes_ratings)
 
+    IPython.embed()
     u_nodes_ratings, v_nodes_ratings = u_nodes_ratings.astype(np.int64), v_nodes_ratings.astype(np.int64)
     ratings = ratings.astype(np.float32)
 
