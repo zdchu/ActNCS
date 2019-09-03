@@ -26,19 +26,19 @@ from sklearn.metrics import confusion_matrix, accuracy_score, f1_score
 from sklearn.utils.extmath import softmax
 from sklearn.metrics import accuracy_score
 
-from gc_mc_master.gcmc.preprocessing import *
-from crowdlayer_master.conlleval import conlleval
+from gcnetwork.gcmc.preprocessing import *
+from crowdlayer.conlleval import conlleval
 
 # packages for learning from crowds
-from crowdlayer_master.crowd_layer.crowd_layers import CrowdsClassification, MaskedMultiCrossEntropy
-from crowdlayer_master.crowd_layer.crowd_aggregators import CrowdsCategoricalAggregator
+from crowdlayer.crowd_layer.crowd_layers import CrowdsClassification, MaskedMultiCrossEntropy
+from crowdlayer.crowd_layer.crowd_aggregators import CrowdsCategoricalAggregator
 
-from gc_mc_master.gcmc.metrics import accuracy_res, accuracy_res_sensor
-from gc_mc_master.gcmc.preprocessing import create_trainvaltest_split, \
+from gcnetwork.gcmc.metrics import accuracy_res, accuracy_res_sensor
+from gcnetwork.gcmc.preprocessing import create_trainvaltest_split, \
     sparse_to_tuple, preprocess_user_item_features, globally_normalize_bipartite_adjacency, \
     load_data_monti, load_official_trainvaltest_split, normalize_features, load_data_sensor, load_data_crowd
-from gc_mc_master.gcmc.model import RecommenderGAE, RecommenderSideInfoGAE
-from gc_mc_master.gcmc.utils import construct_feed_dict
+from gcnetwork.gcmc.model import RecommenderGAE, RecommenderSideInfoGAE
+from gcnetwork.gcmc.utils import construct_feed_dict
 
 from matrix_completion import matrix_completion_NMF
 from labelAggregation import IWMV
@@ -362,7 +362,7 @@ def matrix_completion_GCN(u_features, v_features, adj_train, train_labels, train
         -the set of response label contains all the labels
 '''
 def train():
-    datasplit_path = "./gc_mc_master/gcmc/data/dec/complete/"
+    datasplit_path = "./gcnetwork/gcmc/data/dec/complete/"
     fold = 1
     N_EPOCHS = 300
     BATCH_SIZE = 100
