@@ -13,8 +13,6 @@ import scipy.sparse as sp
 import sys
 import json
 
-from metrics import accuracy_res, accuracy_res_sensor
-
 from preprocessing import create_trainvaltest_split, \
     sparse_to_tuple, preprocess_user_item_features, globally_normalize_bipartite_adjacency, \
     load_data_monti, load_official_trainvaltest_split, normalize_features, load_data_sensor, load_data_crowd

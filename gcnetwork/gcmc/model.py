@@ -3,7 +3,7 @@ from __future__ import print_function
 from .layers import *
 
 #from gcmc.metrics import softmax_accuracy, expected_rmse, softmax_cross_entropy
-from metrics import softmax_accuracy, expected_rmse, softmax_cross_entropy
+from .metrics import softmax_accuracy, expected_rmse, softmax_cross_entropy
 
 flags = tf.app.flags
 FLAGS = flags.FLAGS
