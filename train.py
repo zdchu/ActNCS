@@ -374,7 +374,6 @@ def train():
     num_classes = len(class_values)
     num_oracles = u_features.shape[0]
     dim_instance = v_features.shape[1]
-    IPython.embed()
 
     # matrix completion
     # train dataset
