@@ -10,7 +10,7 @@ import pandas as pd
 
 
 # from data_utils import load_data, map_data, download_dataset
-from data_utils import load_data, map_data, download_dataset, create_data_sensor, create_crowd_data
+from .data_utils import load_data, map_data, download_dataset, create_data_sensor, create_crowd_data
 
 def normalize_features(feat):
 
