@@ -54,7 +54,6 @@ def map_data(data):
 
     id_dict = {old: new for new, old in enumerate(sorted(uniq))}
     data = np.array(list(map(lambda x: id_dict[x], data)))
-    IPython.embed()
     n = len(uniq)
 
     return data, id_dict, n
