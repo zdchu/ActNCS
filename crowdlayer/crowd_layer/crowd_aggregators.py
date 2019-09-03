@@ -52,7 +52,7 @@ class CrowdsBinaryAggregator():
 	def m_step(self, epochs=1):
 		print("M-step")
 		hist = self.model.fit(self.data_train, self.ground_truth_est, epochs=epochs, shuffle=True, batch_size=self.batch_size, verbose=0) 
-		print "loss:", hist.history["loss"][-1]
+		print("loss:", hist.history["loss"][-1])
 		self.ground_truth_est = self.model.predict(self.data_train)
 
 		self.alpha = self.alpha_prior*np.ones(self.num_annotators)
