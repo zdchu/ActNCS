@@ -7,8 +7,8 @@ from keras.engine.topology import Layer
 
 def init_identities(shape, dtype=None):
 	out = np.zeros(shape)
-	for r in xrange(shape[2]):
-		for i in xrange(shape[0]):
+	for r in range(shape[2]):
+		for i in range(shape[0]):
 			out[i,i,r] = 1.0
 	return out
 	
@@ -261,7 +261,7 @@ class CrowdsAggregationBinaryCrossEntropy(object):
 		
 		# initialize alpha and beta (annotators' estimated sensitivity and specificity)
 		if self.alpha == None:
-			print "initializing alpha with unit..."
+			print("initializing alpha with unit...")
 			self.alpha = 0.99*np.ones((self.num_annotators,1), dtype=np.float32)
 		if self.beta == None:
 			self.beta = 0.99*np.ones((self.num_annotators,1), dtype=np.float32)
@@ -297,7 +297,7 @@ class CrowdsAggregationBinaryCrossEntropy(object):
 		#self.count += 1
 
 		if False:
-			print "M-step..."
+			print("M-step...")
 			self.alpha = []
 			self.beta = []
 			for r in xrange(self.num_annotators):
@@ -334,8 +334,8 @@ class CrowdsAggregationBinaryCrossEntropy(object):
 		return loss
 	
 	def m_step(self):
-		print dir(self)
-		print "debug:", self.count.eval()
+		print(dir(self))
+		print("debug:", self.count.eval())
 		#print "M-step"
 		#self.count += 1
 		#print "increment", self.count

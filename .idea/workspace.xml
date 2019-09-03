@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f51c7cf8-a6c7-4f90-97bf-dfe40ffffbae" name="Default Changelist" comment="" />
+    <list default="true" id="f51c7cf8-a6c7-4f90-97bf-dfe40ffffbae" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/crowdlayer/crowd_layer/crowd_layers.py" beforeDir="false" afterPath="$PROJECT_DIR$/crowdlayer/crowd_layer/crowd_layers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gcnetwork/gcmc/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/gcnetwork/gcmc/__init__.py" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
