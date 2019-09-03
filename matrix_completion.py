@@ -51,5 +51,3 @@ def matrix_completion_NMF(rating_mx_train, train_labels, train_u_indices, train_
     response_all = response_all[trn_instance_idx]
     return response_all
 
-def test():
-    pass
