@@ -1,4 +1,5 @@
 import numpy as np
+import IPython
 
 def transformToRes(responses_input):
     response_output = {}
@@ -83,6 +84,7 @@ def IWMV(responses_input, filter_labels, fix_answers, max_iter=500, tol=0.00001)
 
     # labels sorted by instance id
     predictY_key = predictY.keys()
+    IPython.embed()
     predictY_key.sort()
     predictY = np.array([predictY[k] for k in predictY_key])
     return predictY, weight, id_conf
