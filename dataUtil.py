@@ -72,7 +72,7 @@ def load_data_dec(DATASET, FEATURES, DATASEED=1234, TESTING=False, datasplit_dir
         num_users, num_items, u_nodes, v_nodes, ratings, u_features, v_features, true_class \
             = create_crowd_data(DATASET, datasplit_dir, seed=DATASEED, verbose=VERBOSE)
 
-        with open(datasplit_path, 'w') as f:
+        with open(datasplit_path, 'wb') as f:
             IPython.embed()
             pkl.dump([num_users, num_items, u_nodes, v_nodes, ratings, u_features, v_features, true_class], f)
 
