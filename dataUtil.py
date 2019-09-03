@@ -73,6 +73,7 @@ def load_data_dec(DATASET, FEATURES, DATASEED=1234, TESTING=False, datasplit_dir
             = create_crowd_data(DATASET, datasplit_dir, seed=DATASEED, verbose=VERBOSE)
 
         with open(datasplit_path, 'w') as f:
+            IPython.embed()
             pkl.dump([num_users, num_items, u_nodes, v_nodes, ratings, u_features, v_features, true_class], f)
 
     neutral_rating = -1  # sparse
@@ -148,7 +149,6 @@ def create_crowd_data(dataset, data_dir, seed=1234, verbose=True):
     u_nodes_ratings, u_dict, num_users = map_data(u_nodes_ratings)
     v_nodes_ratings, v_dict, num_items = map_data(v_nodes_ratings)
 
-    IPython.embed()
     u_nodes_ratings, v_nodes_ratings = u_nodes_ratings.astype(np.int64), v_nodes_ratings.astype(np.int64)
     ratings = ratings.astype(np.float32)
 
