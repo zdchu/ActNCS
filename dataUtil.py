@@ -123,7 +123,7 @@ def create_crowd_data(dataset, data_dir, seed=1234, verbose=True):
 
     if dataset[:3] == "dec":
         data_dir = data_dir + dataset[4:] + '_'
-
+    IPython.embed()
     # Load response
     filename = data_dir + files[0]
     dtypes = {
