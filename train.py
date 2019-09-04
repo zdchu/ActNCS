@@ -369,7 +369,7 @@ def train():
     u_features, v_features, responses, trn_instance_idx, val_instance_idx, test_instance_idx, class_values, \
     true_class, rating_mx_train, train_labels, train_u_indices, train_v_indices \
         = dataUtil.loadData(DATASET, FEATURES, DATASEED, TESTING, datasplit_path, SPLITFROMFILE, VERBOSE, fold)
-
+    IPython.embed()
     #transform
     num_classes = len(class_values)
     num_oracles = u_features.shape[0]
