@@ -10,6 +10,7 @@ import tensorflow as tf
 import numpy as np
 import scipy.sparse as sp
 import sys
+import IPython
 import json
 
 import dataUtil
@@ -121,6 +122,7 @@ VERBOSE = True
 '''
 GCN-based matrix completion
 '''
+
 def matrix_completion_GCN(u_features, v_features, adj_train, train_labels, train_u_indices, train_v_indices,class_values,trn_instance_idx):
     '''
     :param u_features:
@@ -163,6 +165,7 @@ def matrix_completion_GCN(u_features, v_features, adj_train, train_labels, train
     num_users, num_items = adj_train.shape
     NUMCLASSES = len(class_values)
     num_side_features = 0
+    IPython.embed()
 
     # feature loading
     if not FEATURES:
@@ -360,6 +363,7 @@ def matrix_completion_GCN(u_features, v_features, adj_train, train_labels, train
     input data assumption:
         -the set of response label contains all the labels
 '''
+
 def train():
     datasplit_path = "./gcnetwork/gcmc/data/dec/complete/"
     fold = 1

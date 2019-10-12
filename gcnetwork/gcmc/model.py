@@ -370,24 +370,9 @@ class RecommenderSideInfoGAE(Model):
         for layer in self.layers[3::]:
             hidden = layer(self.activations[-1])
             self.activations.append(hidden)
-        #self.outputs = self.activations[-1]
 
         self.outputs = self.activations[-1][1]
         self.outputs_all = self.activations[-1][0]
-
-        #
-        '''
-        self.outputs_all = self.activations[-1]
-        u_idx = tf.reshape(self.u_indices, [-1,1])
-        v_idx = tf.reshape(self.v_indices, [-1,1])
-        rating_idx = tf.concat([u_idx, v_idx], axis=1)
-        #self.outputs = tf.gather_nd(self.outputs_all, rating_idx)
-        tmp = tf.reshape(self.outputs_all, [self.num_users, self.num_items, self.num_classes])
-        tf.gather_nd
-        #self.outputs = tf.reshape(self.outputs, [-1, self.num_classes])
-
-        #oo = tf.print(self.outputs)
-        '''
 
         # Store model variables for easy access
         variables = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=self.name)

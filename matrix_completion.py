@@ -7,8 +7,9 @@ import numpy as np
     input: a sparse matrix, csr_matrix, |oracle| x |instance|, elem = 1,2,3,..(label + 1), missing = 0
     output: nparray, |instance| x |class| x |oracle|
 '''
-def binary_NMF(matrix_sparse):
 
+
+def binary_NMF(matrix_sparse):
     model = NMF(n_components=10, init='random', random_state=0)
     W = model.fit_transform(matrix_sparse)
     H = model.components_
