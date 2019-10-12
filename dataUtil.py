@@ -1,8 +1,10 @@
+import tensorflow as tf
 '''
 data loading and preprocessing
 '''
 from gcnetwork.gcmc.preprocessing import *
 import random
+from gcnetwork.gcmc.utils import *
 import IPython
 
 '''
@@ -29,8 +31,9 @@ output:
     true_class: np array, true class (not response!) of instances
     responses: no.user x no.item, true response idx, missing value with -1
 '''
-def loadData(DATASET, FEATURES, DATASEED, TESTING, datasplit_path, SPLITFROMFILE, VERBOSE, fold=1):
 
+
+def loadData(DATASET, FEATURES, DATASEED, TESTING, datasplit_path, SPLITFROMFILE, VERBOSE, fold=1):
     if DATASET[:3] == 'dec':
         '''
         u_features, v_features, rating_mx_train, train_labels, u_train_idx, v_train_idx, \
@@ -41,13 +44,15 @@ def loadData(DATASET, FEATURES, DATASEED, TESTING, datasplit_path, SPLITFROMFILE
         true_class, rating_mx_train, train_labels, u_train_idx, v_train_idx \
             = load_data_dec(DATASET, FEATURES, DATASEED, TESTING, datasplit_path, SPLITFROMFILE, VERBOSE, fold)
 
+        responses_mx = responses.copy() + 1
         responses = transform_onehot(np.transpose(responses), u_features.shape[0], len(class_values))
 
     #return u_features, v_features, adj_train, train_labels, train_u_indices, train_v_indices, \
     #           val_labels, val_u_indices, val_v_indices, test_labels, test_u_indices, test_v_indices, \
     #           class_values, true_class
-    return u_features, v_features, responses, trn_instance_idx, val_instance_idx, test_instance_idx, class_values, \
+    return u_features, v_features, responses, responses_mx, trn_instance_idx, val_instance_idx, test_instance_idx, class_values, \
         true_class, rating_mx_train, train_labels, u_train_idx, v_train_idx
+
 
 def load_data_dec(DATASET, FEATURES, DATASEED=1234, TESTING=False, datasplit_dir=None, SPLITFROMFILE=False, VERBOSE=True, fold=1):
     random.seed(DATASEED)
@@ -87,8 +92,8 @@ def load_data_dec(DATASET, FEATURES, DATASEED=1234, TESTING=False, datasplit_dir
     # split the dataset into train/ val/ test
     # shuffle the instances
     trn_rate = 0.8
-    val_rate = 0.1
-    tst_rate = 0.1
+    val_rate = 0.25
+    tst_rate = 0.25
     all_instance_idx = [i for i in range(num_items)]
     test_instance_idx = random.sample(all_instance_idx, int(tst_rate * num_items))
     remained = [i for i in all_instance_idx if i not in test_instance_idx]
@@ -123,7 +128,6 @@ def create_crowd_data(dataset, data_dir, seed=1234, verbose=True):
 
     if dataset[:3] == "dec":
         data_dir = data_dir + dataset[4:] + '_'
-
     # Load response
     filename = data_dir + files[0]
     dtypes = {
@@ -209,7 +213,179 @@ def transform_onehot(answers, N_ANNOT, N_CLASSES):
 input: response array, elem = 0,1,...
 output: one-hot array, elem = [one hot]
 '''
+
+
 def one_hot(target, n_classes):
     targets = np.array([target]).reshape(-1)
     one_hot_targets = np.eye(n_classes)[targets]
     return one_hot_targets
+
+
+def feed_dict_4_GCN(u_features, v_features, adj_train, class_values,
+            train_u_indices, train_v_indices, train_labels, hidden_dim,
+                    test_u_indices=None, test_v_indices=None, test_labels=None, val_u_indices=None, val_v_indices=None, val_labels=None,
+                    with_features=True, sym=True, acum_method='stack', dropout=0.8, self_connections=True, testing=False):
+    num_users, num_items = adj_train.shape
+    num_side_features = 0
+    if not with_features:
+        u_features = sp.identity(num_users, format='csr')
+        v_features = sp.identity(num_items, format='csr')
+
+        u_features, v_features = preprocess_user_item_features(u_features, v_features)
+    elif with_features and u_features is not None and v_features is not None:
+        print('Normalizing feature vectors...')
+        u_features_side = normalize_features(u_features)
+        v_features_side = normalize_features(v_features)
+
+        u_features_side, v_features_side = preprocess_user_item_features(u_features_side, v_features_side)
+
+        u_features_side = np.array(u_features_side.todense(), dtype=np.float32)
+        v_features_side = np.array(v_features_side.todense(), dtype=np.float32)
+
+        num_side_features = u_features_side.shape[1]
+        id_csr_v = sp.identity(num_items, format='csr')
+        id_csr_u = sp.identity(num_users, format='csr')
+
+        u_features, v_features = preprocess_user_item_features(id_csr_u, id_csr_v)
+    else:
+        raise ValueError('Features error')
+
+    support = []
+    support_t = []
+    adj_train_int = sp.csr_matrix(adj_train, dtype=np.int32)
+    for i in range(len(class_values)):
+        support_unnormalized = sp.csr_matrix(adj_train_int == i + 1, dtype=np.float32)
+        if support_unnormalized.nnz == 0:
+            raise Exception('ERROR: normalized bipartite adjacency matrix has only zero entries!!!!!')
+
+        support_unnormalized_transpose = support_unnormalized.T
+        support.append(support_unnormalized)
+        support_t.append(support_unnormalized_transpose)
+    support = globally_normalize_bipartite_adjacency(support, symmetric=sym)
+    support_t = globally_normalize_bipartite_adjacency(support_t, symmetric=sym)
+
+    if self_connections:
+        support.append(sp.identity(u_features.shape[0], format='csr'))
+        support_t.append(sp.identity(v_features.shape[0], format='csr'))
+
+    num_support = len(support)
+    support = sp.hstack(support, format='csr')
+    support_t = sp.hstack(support_t, format='csr')
+
+    if acum_method == 'stack':
+        div = hidden_dim // num_support
+        if hidden_dim % num_support != 0:
+            print("""\nWARNING: HIDDEN[0] (=%d) of stack layer is adjusted to %d such that
+                      it can be evenly split in %d splits.\n""" % (hidden_dim, num_support * div, num_support))
+        hidden_dim = num_support * div
+    if testing:
+        test_u = list(set(test_u_indices))
+        test_v = list(set(test_v_indices))
+        test_u_dict = {n: i for i, n in enumerate(test_u)}
+        test_v_dict = {n: i for i, n in enumerate(test_v)}
+
+        test_u_indices = np.array([test_u_dict[o] for o in test_u_indices])
+        test_v_indices = np.array([test_v_dict[o] for o in test_v_indices])
+
+        test_support = support[np.array(test_u)]
+        test_support_t = support_t[np.array(test_v)]
+
+        val_u = list(set(val_u_indices))
+        val_v = list(set(val_v_indices))
+        val_u_dict = {n: i for i, n in enumerate(val_u)}
+        val_v_dict = {n: i for i, n in enumerate(val_v)}
+
+        val_u_indices = np.array([val_u_dict[o] for o in val_u_indices])
+        val_v_indices = np.array([val_v_dict[o] for o in val_v_indices])
+
+        val_support = support[np.array(val_u)]
+        val_support_t = support_t[np.array(val_v)]
+
+    train_u = list(set(train_u_indices))
+    train_v = list(set(train_v_indices))
+    train_u_dict = {n: i for i, n in enumerate(train_u)}
+    train_v_dict = {n: i for i, n in enumerate(train_v)}
+
+    train_u_indices = np.array([train_u_dict[o] for o in train_u_indices])
+    train_v_indices = np.array([train_v_dict[o] for o in train_v_indices])
+
+    train_support = support[np.array(train_u)]
+    train_support_t = support_t[np.array(train_v)]
+
+    if with_features:
+        if testing:
+            test_u_features_side = u_features_side[np.array(test_u)]
+            test_v_features_side = v_features_side[np.array(test_v)]
+
+            val_u_features_side = u_features_side[np.array(val_u)]
+            val_v_features_side = v_features_side[np.array(val_v)]
+
+        train_u_features_side = u_features_side[np.array(train_u)]
+        train_v_features_side = v_features_side[np.array(train_v)]
+    else:
+        test_u_features_side = None
+        test_v_features_side = None
+
+        val_u_features_side = None
+        val_v_features_side = None
+
+        train_u_features_side = None
+        train_v_features_side = None
+
+    placeholders = {
+        'u_features': tf.sparse_placeholder(tf.float32, shape=np.array(u_features.shape, dtype=np.int64)),
+        'v_features': tf.sparse_placeholder(tf.float32, shape=np.array(v_features.shape, dtype=np.int64)),
+        'u_features_nonzero': tf.placeholder(tf.int32, shape=()),
+        'v_features_nonzero': tf.placeholder(tf.int32, shape=()),
+        'labels': tf.placeholder(tf.int32, shape=(None,)),
+
+        'u_features_side': tf.placeholder(tf.float32, shape=(None, num_side_features)),
+        'v_features_side': tf.placeholder(tf.float32, shape=(None, num_side_features)),
+
+        'user_indices': tf.placeholder(tf.int32, shape=(None,)),
+        'item_indices': tf.placeholder(tf.int32, shape=(None,)),
+
+        'class_values': tf.placeholder(tf.float32, shape=class_values.shape),
+
+        'dropout': tf.placeholder_with_default(0., shape=()),
+        'weight_decay': tf.placeholder_with_default(0., shape=()),
+
+        'support': tf.sparse_placeholder(tf.float32, shape=(None, None)),
+        'support_t': tf.sparse_placeholder(tf.float32, shape=(None, None)),
+    }
+    input_dim = u_features.shape[1]
+    if testing:
+        test_support = sparse_to_tuple(test_support)
+        test_support_t = sparse_to_tuple(test_support_t)
+
+        val_support = sparse_to_tuple(val_support)
+        val_support_t = sparse_to_tuple(val_support_t)
+
+    train_support = sparse_to_tuple(train_support)
+    train_support_t = sparse_to_tuple(train_support_t)
+
+    u_features = sparse_to_tuple(u_features)
+    v_features = sparse_to_tuple(v_features)
+    assert u_features[2][1] == v_features[2][1]
+
+    num_features = u_features[2][1]
+    u_features_nonzero = u_features[1].shape[0]
+    v_features_nonzero = v_features[1].shape[0]
+
+    train_feed_dict = construct_feed_dict(placeholders, u_features, v_features, u_features_nonzero,
+                                          v_features_nonzero, train_support, train_support_t,
+                                          train_labels, train_u_indices, train_v_indices, class_values, dropout,
+                                          train_u_features_side, train_v_features_side)
+
+    if testing:
+        val_feed_dict = construct_feed_dict(placeholders, u_features, v_features, u_features_nonzero,
+                                        v_features_nonzero, val_support, val_support_t,
+                                        val_labels, val_u_indices, val_v_indices, class_values, 0.,
+                                        val_u_features_side, val_v_features_side)
+
+        test_feed_dict = construct_feed_dict(placeholders, u_features, v_features, u_features_nonzero,
+                                         v_features_nonzero, test_support, test_support_t,
+                                         test_labels, test_u_indices, test_v_indices, class_values, 0.,
+                                         test_u_features_side, test_v_features_side)
+    return placeholders, train_feed_dict, input_dim, num_users, num_items, \
+            num_support, num_side_features, hidden_dim, adj_train_int.toarray()

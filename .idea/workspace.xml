@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f51c7cf8-a6c7-4f90-97bf-dfe40ffffbae" name="Default Changelist" comment="">
+<<<<<<< HEAD
       <change beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/R_User_Library.xml" />
       <change beforePath="$PROJECT_DIR$/.idea/GCN_Crowd.iml" afterPath="$PROJECT_DIR$/.idea/GCN_Crowd.iml" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
@@ -9,6 +10,11 @@
       <change beforePath="$PROJECT_DIR$/gcnetwork/gcmc/model.py" afterPath="$PROJECT_DIR$/gcnetwork/gcmc/model.py" />
       <change beforePath="$PROJECT_DIR$/matrix_completion.py" afterPath="$PROJECT_DIR$/matrix_completion.py" />
       <change beforePath="$PROJECT_DIR$/train.py" afterPath="$PROJECT_DIR$/train.py" />
+=======
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataUtil.py" beforeDir="false" afterPath="$PROJECT_DIR$/dataUtil.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/train.py" afterDir="false" />
+>>>>>>> 7326aaefa797307e8b6beee68377fd5bcb2c4f52
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
